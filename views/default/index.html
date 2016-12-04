@@ -125,12 +125,12 @@ $( function() {
 <body>
     <div>
         <div class="main-content">
-            <div id="titlebox" class="draggable-box">
+            <div id="title" class="draggable-box titlebox">
               <h1 class="alignleft">Synth ||</h1>
               <h1 class="alignright">|| Presets</h1>
             </div>
             <hr>
-            <div id="vue-div" class="display:none draggable-box">
+            <div id="vue-div" class="display:none draggable-box vue-style1">
                 <button title="You must be logged in to make presets." v-if="!is_adding" class="ui-button ui-widget ui-corner-all alignright" v-on:click="add_preset_button()" v-bind:class="{'disabled': !logged_in}">
                     <i class="fa fa-plus-square" aria-hidden="true"></i> Add new preset
                 </button>
@@ -167,7 +167,16 @@ $( function() {
                     <h3>Subscribed</h3>
                     <div class="content-overflow">
                         <div v-if="logged_in">
-                            <p>You haven't subscribed to any community presets. Consider checking out the <a class="ui-button ui-widget ui-corner-all" href="listings" onclick="return confirm('Are you sure you want to leave this page?')">community listings</a></p>
+                            <p v-if="no_subscriptions()">You haven't subscribed to any community presets. Consider checking out the <a class="ui-button ui-widget ui-corner-all" href="listings">community listings</a></p>
+                            <div v-for="(preset,index) in subscribed_presets">
+                                <div class="alignleft">
+                                <a class="ui-button ui-widget ui-corner-all" style="width: 100px; overflow-x:hidden" href="#" v-on:click="set_preset(index)">${preset.preset_name}</a>
+                                </div>
+                                <div class="alignright">
+                                    <i class="fa fa-trash-o" v-on:click="unsubscribe_preset(index)" aria-hidden="true"></i>
+                                </div>
+                                <br>
+                            </div>
                         </div>
                         <div v-if="!logged_in">
                             <p>Log in or sign up to get started using presets!</p>

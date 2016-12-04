@@ -31,22 +31,7 @@ def index():
 
 
 def listings():
-    presets = db(db.preset).select(orderby=~db.preset.shared_on)
-    preset_list = []
-    for p in presets:
-        if p.made_public is True:
-            inner_list = []
-            inner_list.append(p.preset_name)
-            inner_list.append(p.volume)
-            inner_list.append(get_user_name_from_email(p.user_email))
-            inner_list.append(p.shared_on)
-            if auth.user is not None and auth.user.email == p.user_email:
-                inner_list.append(True)
-            else:
-                inner_list.append(False)
-            inner_list.append(p.id)
-            preset_list.append(inner_list)
-    return dict(presets=preset_list)
+    return dict()
 
 
 def user():

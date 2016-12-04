@@ -1,4 +1,4 @@
-timestamp: 2016-12-02T18:29:57.618000
+timestamp: 2016-12-04T00:27:42.313000
 CREATE TABLE auth_user(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     first_name CHAR(128),
@@ -7,24 +7,25 @@ CREATE TABLE auth_user(
     password CHAR(512),
     registration_key CHAR(512),
     reset_password_key CHAR(512),
-    registration_id CHAR(512)
+    registration_id CHAR(512),
+    subscribed_to TEXT
 );
 success!
-timestamp: 2016-12-02T18:29:57.626000
+timestamp: 2016-12-04T00:27:42.320000
 CREATE TABLE auth_group(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     role CHAR(512),
     description TEXT
 );
 success!
-timestamp: 2016-12-02T18:29:57.632000
+timestamp: 2016-12-04T00:27:42.325000
 CREATE TABLE auth_membership(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
     group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE  
 );
 success!
-timestamp: 2016-12-02T18:29:57.637000
+timestamp: 2016-12-04T00:27:42.336000
 CREATE TABLE auth_permission(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE  ,
@@ -33,7 +34,7 @@ CREATE TABLE auth_permission(
     record_id INTEGER
 );
 success!
-timestamp: 2016-12-02T18:29:57.644000
+timestamp: 2016-12-04T00:27:42.342000
 CREATE TABLE auth_event(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     time_stamp TIMESTAMP,
@@ -43,7 +44,7 @@ CREATE TABLE auth_event(
     description TEXT
 );
 success!
-timestamp: 2016-12-02T18:29:57.650000
+timestamp: 2016-12-04T00:27:42.348000
 CREATE TABLE auth_cas(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
@@ -53,18 +54,15 @@ CREATE TABLE auth_cas(
     renew CHAR(1)
 );
 success!
-timestamp: 2016-12-02T18:29:57.661000
+timestamp: 2016-12-04T00:27:42.357000
 CREATE TABLE preset(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_email CHAR(512),
-    preset_name TEXT,
+    preset_name CHAR(512),
     volume INTEGER,
     made_public CHAR(1),
     created_on TIMESTAMP,
-    shared_on TIMESTAMP
+    shared_on TIMESTAMP,
+    subscribes INTEGER
 );
-success!
-timestamp: 2016-12-03T13:29:39.001000
-ALTER TABLE auth_group ADD subscribed_to TEXT;
-success!
 success!
