@@ -9,6 +9,16 @@
 # -------------------------------------------------------------------------
 
 
+def get_user_name_from_email(email):
+    """Returns a string corresponding to the user first and last names,
+    given the user email."""
+    u = db(db.auth_user.email == email).select().first()
+    if u is None:
+        return 'None'
+    else:
+        return ' '.join([u.first_name, u.last_name])
+
+
 def index():
     """
     example action using the internationalization operator T and flash
@@ -18,6 +28,25 @@ def index():
     return auth.wiki()
     """
     return dict()
+
+
+def listings():
+    presets = db(db.preset).select(orderby=~db.preset.shared_on)
+    preset_list = []
+    for p in presets:
+        if p.made_public is True:
+            inner_list = []
+            inner_list.append(p.preset_name)
+            inner_list.append(p.volume)
+            inner_list.append(get_user_name_from_email(p.user_email))
+            inner_list.append(p.shared_on)
+            if auth.user is not None and auth.user.email == p.user_email:
+                inner_list.append(True)
+            else:
+                inner_list.append(False)
+            inner_list.append(p.id)
+            preset_list.append(inner_list)
+    return dict(presets=preset_list)
 
 
 def user():

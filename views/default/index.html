@@ -1,61 +1,205 @@
 {{extend 'layout.html'}}
 
-<html>
-    <head>
-    <meta charset="utf‐8">
-    <title> Hello web audio </title> </head>
-    <body>
-   </body>
-   <script>
-       var audioCtx = new (window.AudioContext || window.webkitAudioContext);
+<head>
+<title>JS Testing</title>
+<script src="{{=URL('static','js/jquery.js')}}"
+        type="text/javascript"></script>
+<script src="{{=URL('static','js/jquery-ui-1.8.9.custom.min.js')}}"
+        type="text/javascript"></script>
+<script src="{{=URL('static','js/jquery-ui.min.js')}}"
+        type="text/javascript"></script>
+<script src="{{=URL('static','js/piano_keyboard.js')}}"
+        type="text/javascript"></script>
+<script src="{{=URL('static','js/jquery.knob.js')}}"
+        type="text/javascript"></script>
 
-       /*var sine = audioCtx.createOscillator();
-       sine.start();
-       sine.connect(audioCtx.destination);*/
+<script src="{{=URL('static', 'js/vue.js')}}"></script>
 
-       var gainNode = audioCtx.createGain();
-       gainNode.connect(audioCtx.destination);
+<script>
+$(function() {
+    $('#piano').piano({layout:"simple", blackHeight:60, keys:25, start:12})
+        .bind('pianodown', function display(event, halftone, pressed) { $('#note').text(pressed.join(', ')); } )
+        .bind('pianoup', function(event, halftone, pressed) { $('#note').text(pressed.join(', ')) });
+    $('#sustain').click( function() {
+        $('#piano').piano('sustain', $(this).is(':checked'));
+    });
+});
+</script>
 
-       var sine = audioCtx.createOscillator();
-       sine.frequency.value = 261.63;
-       sine.type = "sine";
-       //sine.start();
+<script>
+$( function() {
+    $( "#draggable" ).draggable({ handle: '#header', containment: "#main-div" });
+} );
+</script>
 
-       document.onkeydown = checkPress;
-       //document.onkeyup = checkRelease;
+<script>
+$( function() {
+    $( "#draggable2" ).draggable({ handle:'#header2', containment: "#main-div"});
+} );
+</script>
 
-       /*function checkRelease(e) {
-           e = e || window.event;
-           sine.stop();
-       }*/
+<script>
+    $(document).on('ready', function(){
+        $("#presets-accordion").accordion({heightStyle: "fill",animate: false,collapsible: true});
+        /*$("#minimize-volume").bind('click', function() {
+            $('#drag-body2').toggle()
+        });*/
+    });
+</script>
 
-       function checkPress(e) {
-           e = e || window.event;
-           if (e.keyCode == '65') {
-               // up arrow
-               sine.start();
-           }
-           /*
-           //else if (e.keyCode == '40') {
-               // down arrow
-           }
-           else if (e.keyCode == '37') {
-               // left arrow
-           }
-           else if (e.keyCode == '39') {
-               // right arrow
+<script>
+$( function() {
+  $().tooltip();
+} );
+</script>
+
+<script>
+$( function() {
+  $( "#dialog" ).dialog();
+} );
+</script>
+
+<script>
+    $(function($) {
+
+        $(".knob").knob({
+            change : function (value) {
+                //console.log("change : " + value);
+            },
+            release : function (value) {
+                //console.log(this.$.attr('value'));
+                console.log("release : " + value);
+            },
+            cancel : function () {
+                console.log("cancel : ", this);
+            },
+            /*format : function (value) {
+                return value + '%';
+            },*/
+            draw : function () {
+
+                // "tron" case
+                if(this.$.data('skin') == 'tron') {
+
+                    this.cursorExt = 0.3;
+
+                    var a = this.arc(this.cv)  // Arc
+                        , pa                   // Previous arc
+                        , r = 1;
+
+                    this.g.lineWidth = this.lineWidth;
+
+                    if (this.o.displayPrevious) {
+                        pa = this.arc(this.v);
+                        this.g.beginPath();
+                        this.g.strokeStyle = this.pColor;
+                        this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, pa.s, pa.e, pa.d);
+                        this.g.stroke();
+                    }
+
+                    this.g.beginPath();
+                    this.g.strokeStyle = r ? this.o.fgColor : this.fgColor ;
+                    this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, a.s, a.e, a.d);
+                    this.g.stroke();
+
+                    this.g.lineWidth = 2;
+                    this.g.beginPath();
+                    this.g.strokeStyle = this.o.fgColor;
+                    this.g.arc( this.xy, this.xy, this.radius - this.lineWidth + 1 + this.lineWidth * 2 / 3, 0, 2 * Math.PI, false);
+                    this.g.stroke();
+
+                    return false;
+                }
             }
-            */
-       }
+        });
+    });
+</script>
+<script>
+    var get_url = "{{=URL('api', 'get_presets')}}";
+    var add_url = "{{=URL('api', 'add_preset', user_signature=True)}}";
+    var del_url = "{{=URL('api', 'delete_preset', user_signature=True)}}";
+    var share_url = "{{=URL('api', 'share_preset', user_signature=True)}}";
+</script>
+</head>
 
-       //checkRelease(e);
+<body>
+    <div>
+        <div class="main-content">
+            <div id="titlebox" class="draggable-box">
+              <h1 class="alignleft">Synth ||</h1>
+              <h1 class="alignright">|| Presets</h1>
+            </div>
+            <hr>
+            <div id="vue-div" class="display:none draggable-box">
+                <button title="You must be logged in to make presets." v-if="!is_adding" class="ui-button ui-widget ui-corner-all alignright" v-on:click="add_preset_button()" v-bind:class="{'disabled': !logged_in}">
+                    <i class="fa fa-plus-square" aria-hidden="true"></i> Add new preset
+                </button>
+                <button v-if="is_adding" class="ui-button ui-widget ui-corner-all alignright" v-on:click="add_preset_button()" v-bind:class="{'disabled': !logged_in}">
+                    <i class="fa fa-window-close-o" aria-hidden="true"></i></i> Cancel
+                </button>
+
+                <div v-if="is_adding" class="add-preset-div">
+                    <br><br>
+                    Name your preset: <input type="text" name="preset_name" id="preset_name_input" size="30">
+                    <br><br>
+                    <button style="background-color: lightslategrey;color:whitesmoke" title="Name between 1-15 characters" class="ui-button ui-widget ui-corner-all alignright" v-on:click="add_preset()">Submit</button>
+                </div>
+                <br><br>
+                <div id="presets-accordion">
+                    <h3>My presets</h3>
+                    <div class="content-overflow">
+                        <div v-if="logged_in">
+                        <div v-for="(preset,index) in presets">
+                            <div class="alignleft">
+                                <a class="ui-button ui-widget ui-corner-all" style="width: 100px; overflow-x:hidden" href="#" v-on:click="set_preset(index)">${preset.preset_name}</a>
+                            </div>
+                            <div class="alignright">
+                                <i class="fa fa-share-square-o" v-on:click="share_preset(index)" aria-hidden="true"></i>
+                                <i class="fa fa-trash-o" v-on:click="delete_preset(index)" aria-hidden="true"></i>
+                            </div>
+                            <br>
+                        </div>
+                        </div>
+                        <div v-if="!logged_in">
+                            <p>Log in or sign up to get started using presets!</p>
+                        </div>
+                    </div>
+                    <h3>Subscribed</h3>
+                    <div class="content-overflow">
+                        <div v-if="logged_in">
+                            <p>You haven't subscribed to any community presets. Consider checking out the <a class="ui-button ui-widget ui-corner-all" href="listings" onclick="return confirm('Are you sure you want to leave this page?')">community listings</a></p>
+                        </div>
+                        <div v-if="!logged_in">
+                            <p>Log in or sign up to get started using presets!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="main-div" class="draggable-box">
+                <div id="draggable" class="shrink-to-fit">
+                    <div id="header" class="draggable-box-header">Keyboard</div>
+                    <div id="drag-body" class="ui-widget-content draggable-box">
+                        <p>Current note is: <span id="note"></span></p>
+                        <div id="piano"></div>
+                        <br>
+                        <p>Sustain pedal: <input id="sustain" type="checkbox" /></p>
+                    </div>
+                </div>
+                <div id="draggable2" class="shrink-to-fit">
+                    <div id="header2" class="draggable-box-header">Volume<i class="fa fa-minus-square" id="minimize-volume" style="float:right;padding-right:3px;padding-top: 3px;" aria-hidden="true"></i></div>
+                    <div id="drag-body2" class="ui-widget-content draggable-box">
+                        <br>
+                        <div id="knob1">
+                            <input class="knob" data-angleOffset=-125 data-angleArc=250 data-fgColor='#666' data-rotation="clockwise" value="35" data-width="170">
+                        </div>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
 
 
-       sine.connect(audioCtx.destination);
-
-   </script>
-</html>
-
-
-
-{{end}}
+<script src="{{=URL('static', 'js/default_index.js')}}"></script>

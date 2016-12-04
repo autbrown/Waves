@@ -90,6 +90,9 @@ plugins = PluginManager()
 # -------------------------------------------------------------------------
 # create all tables needed by auth if not custom tables
 # -------------------------------------------------------------------------
+auth.settings.extra_fields['auth_group']= [
+Field('subscribed_to', type='list:integer')
+]
 auth.define_tables(username=False, signature=False)
 
 # -------------------------------------------------------------------------
