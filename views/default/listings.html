@@ -1,0 +1,76 @@
+{{extend 'layout.html'}}
+<head>
+<title>JS Testing</title>
+<script src="{{=URL('static', 'js/vue.js')}}"></script>
+
+<script>
+    var get_url = "{{=URL('api', 'get_presets')}}";
+    var subscribe_url = "{{=URL('api', 'subscribe_preset', user_signature=True)}}";
+    var unsubscribe_url = "{{=URL('api', 'unsubscribe_preset', user_signature=True)}}";
+    var start_idx = "{{=start_idx}}";
+    var end_idx = "{{=end_idx}}";
+</script>
+
+</head>
+<body>
+<div id="vue-div" class="display:none">
+    <div class="flex-container">
+    <header class="titlebox draggable-box">
+      <h1 class="not-stupid">Community Presets</h1>
+    </header>
+
+    <nav class="nav nav-listings draggable-box">
+        <p>Filters</p>
+        <fieldset>
+            <input type="checkbox" name="mine" id="mine" value="mine" checked/><label for="mine">Show my presets</label><br />
+            <input type="checkbox" name="subscribed" id="subscribed" value="subscribed"  checked/><label for="subscribed">Show subscribed presets</label><br />
+            <input type="checkbox" name="unsubscribed" id="unsubscribed" value="unsubscribed" checked/><label for="unsubscribed">Show unsubscribed presets</label><br />
+        </fieldset>
+        <p>Sort By</p>
+        <fieldset>
+            <input type="radio" name="sortby" id="popular" value="popular" /><label for="popular">Popularity</label><br />
+            <input type="radio" name="sortby" id="time" value="time" checked/><label for="time">Date added</label><br />
+        </fieldset>
+    </nav>
+
+    <article class="article">
+
+        <table class="listings-table">
+            <tr>
+                <th class="listings-header">Preset name</th>
+                <th class="listings-header">Creator</th>
+                <th class="listings-header">Subscriptions</th>
+                <th class="listings-header">Context Action</th>
+            </tr>
+            <tr v-for="(preset,index) in presets">
+                <td class="listings-data">${preset.preset_name}</td>
+                <td class="listings-data">${preset.user_name}</td>
+                <td class="listings-data">${preset.subscribes}</td>
+                <td class="listings-data">
+                    <p v-if="!logged_in">
+                        Log in to subscribe!
+                    </p>
+                    <p v-else-if="is_mine(index)">
+                        Owner
+                    </p>
+                    <a v-else-if="is_subscribed(index)" v-on:click="unsubscribe_button(index)" class="btn btn-warning">
+                        <i class="fa fa-minus-circle" aria-hidden="true"></i> Unsubscribe
+                    </a>
+                    <a v-else v-on:click="subscribe_button(index)" class="btn btn-warning">
+                        <i class="fa fa-plus-circle" aria-hidden="true"></i> Subscribe
+                    </a>
+                </td>
+            </tr>
+        </table>
+        <br>
+        <a v-if="has_less()" href="{{=URL('default','listings', args=[int(start_idx)-10,int(end_idx)-10])}}" class="ui-button ui-widget ui-corner-all">Previous page</a>
+        <a v-if="has_more" href="{{=URL('default','listings', args=[int(start_idx)+10,int(end_idx)+10])}}" class="ui-button ui-widget ui-corner-all">Next page</a>
+
+    </article>
+
+    <footer><p><a class="ui-button ui-widget ui-corner-all" href={{=URL('default','index')}}><i class="fa fa-chevron-circle-left" aria-hidden="true"></i>  Back home</a></p></footer>
+    </div>
+</div>
+</body>
+
+<script src="{{=URL('static', 'js/default_listings.js')}}"></script>
