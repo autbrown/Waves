@@ -31,7 +31,12 @@ def index():
 
 
 def listings():
-    return dict()
+    start_idx = request.args(0) if request.args(0) is not None else 0
+    end_idx = request.args(1) if request.args(1) is not None else 10
+    return dict(
+        start_idx=start_idx,
+        end_idx=end_idx,
+    )
 
 
 def user():

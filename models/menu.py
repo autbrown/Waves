@@ -5,9 +5,7 @@
 # Customize your APP title, subtitle and menus here
 # ----------------------------------------------------------------------------------------------------------------------
 
-response.logo = A(B('web', SPAN(2), 'py'), XML('&trade;&nbsp;'),
-                  _class="navbar-brand", _href="http://www.web2py.com/",
-                  _id="web2py-logo")
+response.logo = A(IMG(_src=URL('static', 'images/waves_inverted.png')), _href=URL('default', 'index'))
 response.title = request.application.replace('_', ' ').title()
 response.subtitle = ''
 
@@ -29,10 +27,11 @@ response.google_analytics_id = None
 # ----------------------------------------------------------------------------------------------------------------------
 
 response.menu = [
-    (T('Home'), False, URL('default', 'index'), [])
+    (T('Home'), False, URL('default', 'index'), []),
+    (T('Listings'), False, URL('default', 'listings'))
 ]
 
-DEVELOPMENT_MENU = True
+DEVELOPMENT_MENU = False
 
 
 # ----------------------------------------------------------------------------------------------------------------------

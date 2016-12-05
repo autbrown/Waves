@@ -1,4 +1,4 @@
-timestamp: 2016-12-04T00:27:42.313000
+timestamp: 2016-12-05T13:20:24.772000
 CREATE TABLE auth_user(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     first_name CHAR(128),
@@ -11,21 +11,21 @@ CREATE TABLE auth_user(
     subscribed_to TEXT
 );
 success!
-timestamp: 2016-12-04T00:27:42.320000
+timestamp: 2016-12-05T13:20:24.814000
 CREATE TABLE auth_group(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     role CHAR(512),
     description TEXT
 );
 success!
-timestamp: 2016-12-04T00:27:42.325000
+timestamp: 2016-12-05T13:20:24.833000
 CREATE TABLE auth_membership(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
     group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE  
 );
 success!
-timestamp: 2016-12-04T00:27:42.336000
+timestamp: 2016-12-05T13:20:24.844000
 CREATE TABLE auth_permission(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE  ,
@@ -34,7 +34,7 @@ CREATE TABLE auth_permission(
     record_id INTEGER
 );
 success!
-timestamp: 2016-12-04T00:27:42.342000
+timestamp: 2016-12-05T13:20:24.854000
 CREATE TABLE auth_event(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     time_stamp TIMESTAMP,
@@ -44,7 +44,7 @@ CREATE TABLE auth_event(
     description TEXT
 );
 success!
-timestamp: 2016-12-04T00:27:42.348000
+timestamp: 2016-12-05T13:20:24.864000
 CREATE TABLE auth_cas(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
@@ -54,12 +54,14 @@ CREATE TABLE auth_cas(
     renew CHAR(1)
 );
 success!
-timestamp: 2016-12-04T00:27:42.357000
+timestamp: 2016-12-05T13:20:24.884000
 CREATE TABLE preset(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_email CHAR(512),
     preset_name CHAR(512),
     volume INTEGER,
+    wave_type CHAR(512),
+    LPF INTEGER,
     made_public CHAR(1),
     created_on TIMESTAMP,
     shared_on TIMESTAMP,

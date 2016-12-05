@@ -15,14 +15,69 @@
 
 <script src="{{=URL('static', 'js/vue.js')}}"></script>
 
+<script src="{{=URL('static', 'js/sound_events.js')}}"></script>
+
 <script>
 $(function() {
-    $('#piano').piano({layout:"simple", blackHeight:60, keys:25, start:12})
-        .bind('pianodown', function display(event, halftone, pressed) { $('#note').text(pressed.join(', ')); } )
-        .bind('pianoup', function(event, halftone, pressed) { $('#note').text(pressed.join(', ')) });
-    $('#sustain').click( function() {
-        $('#piano').piano('sustain', $(this).is(':checked'));
-    });
+    $('#piano').piano({layout:"simple", blackHeight:60, keys:15, start:12})
+        .bind('pianodown', function display(event, halftone, pressed) {
+            $('#note').text(pressed.join(', '));
+            if (pressed == 12) {
+               initializeOsc(MiddleC * range);
+               sine.start();
+           } else if (pressed == 13){
+               initializeOsc(MiddleC * range * Math.pow(freqRatio, 1));
+               sine.start();
+           } else if (pressed == 14){
+               initializeOsc(MiddleC * range * Math.pow(freqRatio, 2));
+               sine.start();
+           } else if (pressed == 15){
+               initializeOsc(MiddleC * range * Math.pow(freqRatio, 3));
+               sine.start();
+           } else if (pressed == 16){
+               initializeOsc(MiddleC * range * Math.pow(freqRatio, 4));
+               sine.start();
+           } else if (pressed == 17){
+               initializeOsc(MiddleC * range * Math.pow(freqRatio, 5));
+               sine.start();
+           } else if (pressed == 18){
+               initializeOsc(MiddleC * range * Math.pow(freqRatio, 6));
+               sine.start();
+           } else if (pressed == 19){
+               initializeOsc(MiddleC * range * Math.pow(freqRatio, 7));
+               sine.start();
+           } else if (pressed == 20){
+               initializeOsc(MiddleC * range * Math.pow(freqRatio, 8));
+               sine.start();
+           } else if (pressed == 21){
+               initializeOsc(MiddleC * range * Math.pow(freqRatio, 9));
+               sine.start();
+           } else if (pressed == 22){
+               initializeOsc(MiddleC * range * Math.pow(freqRatio, 10));
+               sine.start();
+           } else if (pressed == 23){
+               initializeOsc(MiddleC * range * Math.pow(freqRatio, 11));
+               sine.start();
+           } else if (pressed == 24){
+               initializeOsc(MiddleC * range * Math.pow(freqRatio, 12));
+               sine.start();
+           } else if (pressed == 25){
+               initializeOsc(MiddleC * range * Math.pow(freqRatio, 13));
+               sine.start();
+           } else if (pressed == 26){
+               initializeOsc(MiddleC * range * Math.pow(freqRatio, 14));
+               sine.start();
+           }
+        } )
+        .bind('pianoup', function(event, halftone, pressed) {
+            $('#note').text(pressed.join(', '));
+            soundCheck = 0;
+            gainNode.gain.value = 0;
+            try{
+                sine.stop();
+            }
+            catch (e) {}
+        });
 });
 </script>
 
@@ -35,6 +90,18 @@ $( function() {
 <script>
 $( function() {
     $( "#draggable2" ).draggable({ handle:'#header2', containment: "#main-div"});
+} );
+</script>
+
+<script>
+$( function() {
+    $( "#draggable3" ).draggable({ handle:'#header3', containment: "#main-div"});
+} );
+</script>
+
+<script>
+$( function() {
+    $( "#draggable4" ).draggable({ handle:'#header4', containment: "#main-div"});
 } );
 </script>
 
@@ -61,7 +128,6 @@ $( function() {
 
 <script>
     $(function($) {
-
         $(".knob").knob({
             change : function (value) {
                 //console.log("change : " + value);
@@ -119,15 +185,17 @@ $( function() {
     var add_url = "{{=URL('api', 'add_preset', user_signature=True)}}";
     var del_url = "{{=URL('api', 'delete_preset', user_signature=True)}}";
     var share_url = "{{=URL('api', 'share_preset', user_signature=True)}}";
+    var unsubscribe_url = "{{=URL('api', 'unsubscribe_preset', user_signature=True)}}";
 </script>
 </head>
 
 <body>
     <div>
         <div class="main-content">
-            <div id="title" class="draggable-box titlebox">
-              <h1 class="alignleft">Synth ||</h1>
-              <h1 class="alignright">|| Presets</h1>
+            <div id="title" class="draggable-box titlebox text-center">
+              <h2 class="alignleft">Synth</h2>
+                <img src="{{=URL('static', 'images/waves.png')}}" alt="waves" height="63" width="202">
+              <h2 class="alignright">Presets</h2>
             </div>
             <hr>
             <div id="vue-div" class="display:none draggable-box vue-style1">
@@ -154,8 +222,9 @@ $( function() {
                                 <a class="ui-button ui-widget ui-corner-all" style="width: 100px; overflow-x:hidden" href="#" v-on:click="set_preset(index)">${preset.preset_name}</a>
                             </div>
                             <div class="alignright">
-                                <i class="fa fa-share-square-o" v-on:click="share_preset(index)" aria-hidden="true"></i>
-                                <i class="fa fa-trash-o" v-on:click="delete_preset(index)" aria-hidden="true"></i>
+                                <i v-if="!is_shared(index)" class="fa fa-share-square-o" v-on:click="share_preset(index)" aria-hidden="true"></i>
+                                <i v-else class="fa fa-share-square-o grayed-out" aria-hidden="true"></i>
+                                <i class="fa fa-trash-o" v-on:click="delete_preset(index)" title="Delete preset" aria-hidden="true"></i>
                             </div>
                             <br>
                         </div>
@@ -170,10 +239,10 @@ $( function() {
                             <p v-if="no_subscriptions()">You haven't subscribed to any community presets. Consider checking out the <a class="ui-button ui-widget ui-corner-all" href="listings">community listings</a></p>
                             <div v-for="(preset,index) in subscribed_presets">
                                 <div class="alignleft">
-                                <a class="ui-button ui-widget ui-corner-all" style="width: 100px; overflow-x:hidden" href="#" v-on:click="set_preset(index)">${preset.preset_name}</a>
+                                <a class="ui-button ui-widget ui-corner-all" style="width: 100px; overflow-x:hidden" href="#" v-on:click="set_subscribed_preset(index)">${preset.preset_name}</a>
                                 </div>
                                 <div class="alignright">
-                                    <i class="fa fa-trash-o" v-on:click="unsubscribe_preset(index)" aria-hidden="true"></i>
+                                    <i class="fa fa-trash-o" v-on:click="unsubscribe_preset(index)" title="Unsubscribe" aria-hidden="true"></i>
                                 </div>
                                 <br>
                             </div>
@@ -192,15 +261,53 @@ $( function() {
                         <p>Current note is: <span id="note"></span></p>
                         <div id="piano"></div>
                         <br>
-                        <p>Sustain pedal: <input id="sustain" type="checkbox" /></p>
+                        <p>Current octave offset: <span class="octave"></span></p>
                     </div>
                 </div>
                 <div id="draggable2" class="shrink-to-fit">
-                    <div id="header2" class="draggable-box-header">Volume<i class="fa fa-minus-square" id="minimize-volume" style="float:right;padding-right:3px;padding-top: 3px;" aria-hidden="true"></i></div>
+                    <div id="header2" class="draggable-box-header">Volume</div>
                     <div id="drag-body2" class="ui-widget-content draggable-box">
                         <br>
                         <div id="knob1">
-                            <input class="knob" data-angleOffset=-125 data-angleArc=250 data-fgColor='#666' data-rotation="clockwise" value="35" data-width="170">
+                            <input class="knob knob1" data-angleOffset=-125 data-angleArc=250 data-fgColor='#666' data-rotation="clockwise" value="35" data-width="170">
+                        </div>
+                        <br>
+                    </div>
+                </div>
+                <div id="draggable3" class="shrink-to-fit">
+                    <div id="header3" class="draggable-box-header">Wave Type</div>
+                    <div id="drag-body3" class="ui-widget-content draggable-box">
+                        <br>
+                        <div class="button">
+                            <input type="radio" name="wave_type" value="sine" id="a" checked="checked" />
+                            <label for="a">
+                                <img src="{{=URL('static','images/sine-wave-small.png')}}">
+                            </label>
+                            <p class="button-desc">Sine wave</p>
+                        </div>
+                        <div class="button">
+                            <input type="radio" name="wave_type" value="square" id="b" />
+                            <label for="b">
+                                <img src="{{=URL('static','images/square-wave-small.png')}}">
+                            </label>
+                            <p class="button-desc">Square wave</p>
+                        </div>
+                        <div class="button">
+                            <input type="radio" name="wave_type" value="sawtooth" id="c" />
+                            <label for="c">
+                                <img src="{{=URL('static','images/sawtooth-wave-small.png')}}">
+                            </label>
+                            <p class="button-desc">Sawtooth wave</p>
+                        </div>
+                        <br>
+                    </div>
+                </div>
+                <div id="draggable4" class="shrink-to-fit">
+                    <div id="header4" class="draggable-box-header">Low-pass Filter</div>
+                    <div id="drag-body4" class="ui-widget-content draggable-box">
+                        <br>
+                        <div id="knob2">
+                            <input class="knob knob2" data-angleOffset=-125 data-angleArc=250 data-fgColor='#666' data-rotation="clockwise" value="300" data-width="170" data-min="0" data-max="22000">
                         </div>
                         <br>
                     </div>
@@ -210,5 +317,8 @@ $( function() {
     </div>
 </body>
 
+<script>
+    $('.octave').html(octave);
+</script>
 
 <script src="{{=URL('static', 'js/default_index.js')}}"></script>
