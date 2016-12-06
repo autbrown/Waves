@@ -2,6 +2,11 @@
  * Created by Michael on 12/5/2016.
  */
 // Initialize variables
+   jQuery.expr[':'].focus = function( elem ) {
+       return elem === document.activeElement && ( elem.type || elem.href );
+   };
+   //Was using to check keyRelease
+   //var keycodes = ["65", "83", "68", "70", "71", "72", "74", "75", "76", "87", "69", "84", "89", "85", "79"];
    var audioCtx = new (window.AudioContext || window.webkitAudioContext);
 
    var gainNode = audioCtx.createGain();
@@ -45,6 +50,9 @@
    var soundCheck = 0;
    // Initialize OSC and play notes at dictated frequency
    function checkPress(e) {
+       if ($("#preset_name_input").is(":focus")){
+           return;
+       }
        e = e || window.event;
        if (soundCheck == 0) {
            soundCheck = 1;
@@ -113,64 +121,14 @@
    }
    // Stop OSC on key release
    function checkRelease(e) {
-       e = e || window.event;
-       if(soundCheck == 1) {
-           if (e.keyCode == '65') {
-               soundCheck = 0;
-               gainNode.gain.value = 0;
-               sine.stop();
-           } else if (e.keyCode == '87'){
-               soundCheck = 0;
-               gainNode.gain.value = 0;
-               sine.stop();
-           } else if (e.keyCode == '69'){
-               soundCheck = 0;
-               gainNode.gain.value = 0;
-               sine.stop();
-           } else if (e.keyCode == '68'){
-               soundCheck = 0;
-               gainNode.gain.value = 0;
-               sine.stop();
-           } else if (e.keyCode == '70'){
-               soundCheck = 0;
-               gainNode.gain.value = 0;
-               sine.stop();
-           } else if (e.keyCode == '84'){
-               soundCheck = 0;
-               gainNode.gain.value = 0;
-               sine.stop();
-           } else if (e.keyCode == '71'){
-               soundCheck = 0;
-               gainNode.gain.value = 0;
-               sine.stop();
-           } else if (e.keyCode == '89'){
-               soundCheck = 0;
-               gainNode.gain.value = 0;
-               sine.stop();
-           } else if (e.keyCode == '72'){
-               soundCheck = 0;
-               gainNode.gain.value = 0;
-               sine.stop();
-           } else if (e.keyCode == '85'){
-               soundCheck = 0;
-               gainNode.gain.value = 0;
-               sine.stop();
-           } else if (e.keyCode == '74'){
-               soundCheck = 0;
-               gainNode.gain.value = 0;
-               sine.stop();
-           } else if (e.keyCode == '75'){
-               soundCheck = 0;
-               gainNode.gain.value = 0;
-               sine.stop();
-           } else if (e.keyCode == '79'){
-               soundCheck = 0;
-               gainNode.gain.value = 0;
-               sine.stop();
-           } else if (e.keyCode == '76'){
-               soundCheck = 0;
-               gainNode.gain.value = 0;
-               sine.stop();
-           }
-       }
+       soundCheck = 0;
+       gainNode.gain.value = 0;
+       sine.stop();
+       /*e = e || window.event;
+       if (soundCheck == 1 && keycodes.indexOf(e.keyCode) > -1) {
+            soundCheck = 0;
+            gainNode.gain.value = 0;
+            sine.stop();
+       }*/
+       //Was causing strange bugs on certain keys
    }

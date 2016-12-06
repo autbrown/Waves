@@ -111,6 +111,7 @@ $( function() {
         /*$("#minimize-volume").bind('click', function() {
             $('#drag-body2').toggle()
         });*/
+        //Caused bugs with all other JQuery elements???
     });
 </script>
 
@@ -274,40 +275,46 @@ $( function() {
                         <br>
                     </div>
                 </div>
-                <div id="draggable3" class="shrink-to-fit">
-                    <div id="header3" class="draggable-box-header">Wave Type</div>
-                    <div id="drag-body3" class="ui-widget-content draggable-box">
-                        <br>
-                        <div class="button">
-                            <input type="radio" name="wave_type" value="sine" id="a" checked="checked" />
-                            <label for="a">
-                                <img src="{{=URL('static','images/sine-wave-small.png')}}">
-                            </label>
-                            <p class="button-desc">Sine wave</p>
-                        </div>
-                        <div class="button">
-                            <input type="radio" name="wave_type" value="square" id="b" />
-                            <label for="b">
-                                <img src="{{=URL('static','images/square-wave-small.png')}}">
-                            </label>
-                            <p class="button-desc">Square wave</p>
-                        </div>
-                        <div class="button">
-                            <input type="radio" name="wave_type" value="sawtooth" id="c" />
-                            <label for="c">
-                                <img src="{{=URL('static','images/sawtooth-wave-small.png')}}">
-                            </label>
-                            <p class="button-desc">Sawtooth wave</p>
-                        </div>
-                        <br>
-                    </div>
-                </div>
                 <div id="draggable4" class="shrink-to-fit">
                     <div id="header4" class="draggable-box-header">Low-pass Filter</div>
                     <div id="drag-body4" class="ui-widget-content draggable-box">
                         <br>
                         <div id="knob2">
                             <input class="knob knob2" data-angleOffset=-125 data-angleArc=250 data-fgColor='#666' data-rotation="clockwise" value="300" data-width="170" data-min="0" data-max="22000">
+                        </div>
+                        <br>
+                    </div>
+                </div>
+                <div id="draggable3" class="shrink-to-fit">
+                    <div id="header3" class="draggable-box-header">Waveform</div>
+                    <div id="drag-body3" class="ui-widget-content draggable-box">
+                        <div class="button">
+                            <input type="radio" name="wave_type" value="sine" id="a" checked="checked" />
+                            <label for="a">
+                                <img src="{{=URL('static','images/sine-wave-small.png')}}">
+                            </label>
+                            <span class="button-desc">Sine wave</span>
+                        </div>
+                        <div class="button">
+                            <input type="radio" name="wave_type" value="square" id="b" />
+                            <label for="b">
+                                <img src="{{=URL('static','images/square-wave-small.png')}}">
+                            </label>
+                            <span class="button-desc">Square wave</span>
+                        </div>
+                        <div class="button">
+                            <input type="radio" name="wave_type" value="sawtooth" id="c" />
+                            <label for="c">
+                                <img src="{{=URL('static','images/sawtooth-wave-small.png')}}">
+                            </label>
+                            <span class="button-desc">Sawtooth wave</span>
+                        </div>
+                        <div class="button">
+                            <input type="radio" name="wave_type" value="triangle" id="d" />
+                            <label for="d">
+                                <img src="{{=URL('static','images/triangle-wave-small.png')}}">
+                            </label>
+                            <span class="button-desc">Triangle wave</span>
                         </div>
                         <br>
                     </div>
