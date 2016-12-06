@@ -6,30 +6,95 @@
     <title> Hello web audio </title> </head>
     <body>
     </body>
-    <script>
-    </script>
-    <script>
 
+    <script>
        // Initialize variables
        var audioCtx = new (window.AudioContext || window.webkitAudioContext);
-       var sine;
+
+       var source;
+       var analyser = audioCtx.createAnalyser();
+       var biquadFilter = audioCtx.createBiquadFilter();
+       var distortion = audioCtx.createWaveShaper();
+       var masterGain = audioCtx.createGain();
+
+
+       masterGain.connect(audioCtx.destination);
+
+
+       // Commented code for Reverb / Oscilloscope
+       //var concolverGain = audioCtx.createGain();
+       //var convolver = audioCtx.createConvolver();
+
+       //var impulseUrl = ;
+
+       //analyser.connect(distortion);
+       //distortion.connect(biquadFilter);
+       //biquadFilter.connect(masterGain);
+       masterGain.connect(audioCtx.destination);
+
+       /*analyser.fftSize = 2048;
+       var bufferLength = analyser.freqencyBinCount;
+       var dataArray = new Uint8Array(bufferLength);
+       analyser.getByteTimeDomainData(dataArray);*/
+
+       // Convolver (Reverb) code
+
+
+
+
+       // Oscillator set-up
+
+       var Osc1;
+       var Osc2;
+       var Osc3;
+       var Osc1flag = 0;
+       var Osc2flag = 0;
+       var Osc3flag = 0;
+       var Osc1key;
+       var Osc2key;
+       var Osc3key;
+
+       var Osc1Gain = audioCtx.createGain();
+       var Osc2Gain = audioCtx.createGain();
+       var Osc3Gain = audioCtx.createGain();
+
+       Osc1Gain.connect(masterGain);
+       Osc2Gain.connect(masterGain);
+       Osc3Gain.connect(masterGain);
+
        var range = 1;
        var octave = 0;
        var MiddleC = 261.63;
        var freqRatio = 1.05946;
 
-       // Sine wave Oscillator initialized at the specified frequency/wave type
+       // Oscillators initialized at the specified frequency/wave type
        // Needs to be initialized multiple times as per design of Web Audio API
-       function initializeOsc(freq) {
-           sine = audioCtx.createOscillator();
-           sine.frequency.value = freq;
-           sine.type = 'sine';
-           sine.connect(audioCtx.destination);
-       }
+       function initializeOsc1(freq) {
+           Osc1 = audioCtx.createOscillator();
+           Osc1.frequency.value = freq;
+           Osc1Gain.gain.value = 1;
+           Osc1.type = 'Osc1';
+           Osc1.connect(Osc1Gain);
+           Osc1.start();
+       };
 
-       // Gain node used to change volume
-       var gainNode = audioCtx.createGain();
-       gainNode.connect(audioCtx.destination);
+       function initializeOsc2(freq) {
+           Osc2 = audioCtx.createOscillator();
+           Osc2.frequency.value = freq;
+           Osc2Gain.gain.value = 1;
+           Osc2.type = 'Osc1';
+           Osc2.connect(Osc2Gain);
+           Osc2.start();
+       };
+
+       function initializeOsc3(freq) {
+           Osc3 = audioCtx.createOscillator();
+           Osc3.frequency.value = freq;
+           Osc3Gain.gain.value = 1;
+           Osc3.type = 'Osc1';
+           Osc3.connect(Osc3Gain);
+           Osc3.start();
+       };
 
        // Set Octave for Keyboard
        function setOctave() {
@@ -40,67 +105,236 @@
        // Create flags for keyboard playing
        document.onkeydown = checkPress;
        document.onkeyup = checkRelease;
-       var soundCheck = 0;
 
        // Initialize OSC and play notes at dictated frequency
        function checkPress(e) {
            e = e || window.event;
-           if (soundCheck == 0) {
-               soundCheck = 1;
-               if (e.keyCode == '65') {
-                   initializeOsc(MiddleC * range);
-                   sine.start();
-               } else if (e.keyCode == '87'){
-                   initializeOsc(MiddleC * range * Math.pow(freqRatio, 1));
-                   sine.start();
-               } else if (e.keyCode == '83'){
-                   initializeOsc(MiddleC * range * Math.pow(freqRatio, 2));
-                   sine.start();
-               } else if (e.keyCode == '69'){
-                   initializeOsc(MiddleC * range * Math.pow(freqRatio, 3));
-                   sine.start();
-               } else if (e.keyCode == '68'){
-                   initializeOsc(MiddleC * range * Math.pow(freqRatio, 4));
-                   sine.start();
-               } else if (e.keyCode == '70'){
-                   initializeOsc(MiddleC * range * Math.pow(freqRatio, 5));
-                   sine.start();
-               } else if (e.keyCode == '84'){
-                   initializeOsc(MiddleC * range * Math.pow(freqRatio, 6));
-                   sine.start();
-               } else if (e.keyCode == '71'){
-                   initializeOsc(MiddleC * range * Math.pow(freqRatio, 7));
-                   sine.start();
-               } else if (e.keyCode == '89'){
-                   initializeOsc(MiddleC * range * Math.pow(freqRatio, 8));
-                   sine.start();
-               } else if (e.keyCode == '72'){
-                   initializeOsc(MiddleC * range * Math.pow(freqRatio, 9));
-                   sine.start();
-               } else if (e.keyCode == '85'){
-                   initializeOsc(MiddleC * range * Math.pow(freqRatio, 10));
-                   sine.start();
-               } else if (e.keyCode == '74'){
-                   initializeOsc(MiddleC * range * Math.pow(freqRatio, 11));
-                   sine.start();
-               } else if (e.keyCode == '75'){
-                   initializeOsc(MiddleC * range * Math.pow(freqRatio, 12));
-                   sine.start();
-               } else if (e.keyCode == '79'){
-                   initializeOsc(MiddleC * range * Math.pow(freqRatio, 13));
-                   sine.start();
-               } else if (e.keyCode == '76'){
-                   initializeOsc(MiddleC * range * Math.pow(freqRatio, 14));
-                   sine.start();
+           if (e.keyCode == '65') {
+               if (Osc1flag == 0) {
+                   Osc1flag = 1;
+                   Osc1key = e.keyCode;
+                   initializeOsc1(MiddleC * range);
+               } else if (Osc2flag == 0) {
+                   Osc2flag = 1;
+                   Osc2key = e.keyCode;
+                   initializeOsc2(MiddleC * range);
+               } else if (Osc3flag == 0) {
+                   Osc3flag = 1;
+                   Osc3key = e.keyCode;
+                   initializeOsc3(MiddleC * range);
+               }
+           } else if (e.keyCode == '87') {
+               if (Osc1flag == 0) {
+                   Osc1flag = 1;
+                   Osc1key = e.keyCode;
+                   initializeOsc1(MiddleC * range * Math.pow(freqRatio, 1));
+               } else if (Osc2flag == 0) {
+                   Osc2flag = 1;
+                   Osc2key = e.keyCode;
+                   initializeOsc2(MiddleC * range * Math.pow(freqRatio, 1));
+               } else if (Osc3flag == 0) {
+                   Osc3flag = 1;
+                   Osc3key = e.keyCode;
+                   initializeOsc3(MiddleC * range * Math.pow(freqRatio, 1));
+               }
+           } else if (e.keyCode == '83') {
+               if (Osc1flag == 0) {
+                   Osc1flag = 1;
+                   Osc1key = e.keyCode;
+                   initializeOsc1(MiddleC * range * Math.pow(freqRatio, 2));
+               } else if (Osc2flag == 0) {
+                   Osc2flag = 1;
+                   Osc2key = e.keyCode;
+                   initializeOsc2(MiddleC * range * Math.pow(freqRatio, 2));
+               } else if (Osc3flag == 0) {
+                   Osc3flag = 1;
+                   Osc3key = e.keyCode;
+                   initializeOsc3(MiddleC * range * Math.pow(freqRatio, 2));
+               }
+           } else if (e.keyCode == '69') {
+               if (Osc1flag == 0) {
+                   Osc1flag = 1;
+                   Osc1key = e.keyCode;
+                   initializeOsc1(MiddleC * range * Math.pow(freqRatio, 3));
+               } else if (Osc2flag == 0) {
+                   Osc2flag = 1;
+                   Osc2key = e.keyCode;
+                   initializeOsc2(MiddleC * range * Math.pow(freqRatio, 3));
+               } else if (Osc3flag == 0) {
+                   Osc3flag = 1;
+                   Osc3key = e.keyCode;
+                   initializeOsc3(MiddleC * range * Math.pow(freqRatio, 3));
+               }
+           } else if (e.keyCode == '68') {
+               if (Osc1flag == 0) {
+                   Osc1flag = 1;
+                   Osc1key = e.keyCode;
+                   initializeOsc1(MiddleC * range * Math.pow(freqRatio, 4));
+               } else if (Osc2flag == 0) {
+                   Osc2flag = 1;
+                   Osc2key = e.keyCode;
+                   initializeOsc2(MiddleC * range * Math.pow(freqRatio, 4));
+               } else if (Osc3flag == 0) {
+                   Osc3flag = 1;
+                   Osc3key = e.keyCode;
+                   initializeOsc3(MiddleC * range * Math.pow(freqRatio, 4));
+               }
+           } else if (e.keyCode == '70') {
+               if (Osc1flag == 0) {
+                   Osc1flag = 1;
+                   Osc1key = e.keyCode;
+                   initializeOsc1(MiddleC * range * Math.pow(freqRatio, 5));
+               } else if (Osc2flag == 0) {
+                   Osc2flag = 1;
+                   Osc2key = e.keyCode;
+                   initializeOsc2(MiddleC * range * Math.pow(freqRatio, 5));
+               } else if (Osc3flag == 0) {
+                   Osc3flag = 1;
+                   Osc3key = e.keyCode;
+                   initializeOsc3(MiddleC * range * Math.pow(freqRatio, 5));
+               }
+           } else if (e.keyCode == '84') {
+               if (Osc1flag == 0) {
+                   Osc1flag = 1;
+                   Osc1key = e.keyCode;
+                   initializeOsc1(MiddleC * range * Math.pow(freqRatio, 6));
+               } else if (Osc2flag == 0) {
+                   Osc2flag = 1;
+                   Osc2key = e.keyCode;
+                   initializeOsc2(MiddleC * range * Math.pow(freqRatio, 6));
+               } else if (Osc3flag == 0) {
+                   Osc3flag = 1;
+                   Osc3key = e.keyCode;
+                   initializeOsc3(MiddleC * range * Math.pow(freqRatio, 6));
+               }
+           } else if (e.keyCode == '71') {
+               if (Osc1flag == 0) {
+                   Osc1flag = 1;
+                   Osc1key = e.keyCode;
+                   initializeOsc1(MiddleC * range * Math.pow(freqRatio, 7));
+               } else if (Osc2flag == 0) {
+                   Osc2flag = 1;
+                   Osc2key = e.keyCode;
+                   initializeOsc2(MiddleC * range * Math.pow(freqRatio, 7));
+               } else if (Osc3flag == 0) {
+                   Osc3flag = 1;
+                   Osc3key = e.keyCode;
+                   initializeOsc3(MiddleC * range * Math.pow(freqRatio, 7));
+               }
+           } else if (e.keyCode == '89') {
+               if (Osc1flag == 0) {
+                   Osc1flag = 1;
+                   Osc1key = e.keyCode;
+                   initializeOsc1(MiddleC * range * Math.pow(freqRatio, 8));
+               } else if (Osc2flag == 0) {
+                   Osc2flag = 1;
+                   Osc2key = e.keyCode;
+                   initializeOsc2(MiddleC * range * Math.pow(freqRatio, 8));
+               } else if (Osc3flag == 0) {
+                   Osc3flag = 1;
+                   Osc3key = e.keyCode;
+                   initializeOsc3(MiddleC * range * Math.pow(freqRatio, 8));
+               }
+           } else if (e.keyCode == '72') {
+               if (Osc1flag == 0) {
+                   Osc1flag = 1;
+                   Osc1key = e.keyCode;
+                   initializeOsc1(MiddleC * range * Math.pow(freqRatio, 9));
+               } else if (Osc2flag == 0) {
+                   Osc2flag = 1;
+                   Osc2key = e.keyCode;
+                   initializeOsc2(MiddleC * range * Math.pow(freqRatio, 9));
+               } else if (Osc3flag == 0) {
+                   Osc3flag = 1;
+                   Osc3key = e.keyCode;
+                   initializeOsc3(MiddleC * range * Math.pow(freqRatio, 9));
+               }
+           } else if (e.keyCode == '85') {
+               if (Osc1flag == 0) {
+                   Osc1flag = 1;
+                   Osc1key = e.keyCode;
+                   initializeOsc1(MiddleC * range * Math.pow(freqRatio, 10));
+               } else if (Osc2flag == 0) {
+                   Osc2flag = 1;
+                   Osc2key = e.keyCode;
+                   initializeOsc2(MiddleC * range * Math.pow(freqRatio, 10));
+               } else if (Osc3flag == 0) {
+                   Osc3flag = 1;
+                   Osc3key = e.keyCode;
+                   initializeOsc3(MiddleC * range * Math.pow(freqRatio, 10));
+               }
+           } else if (e.keyCode == '74') {
+               if (Osc1flag == 0) {
+                   Osc1flag = 1;
+                   Osc1key = e.keyCode;
+                   initializeOsc1(MiddleC * range * Math.pow(freqRatio, 11));
+               } else if (Osc2flag == 0) {
+                   Osc2flag = 1;
+                   Osc2key = e.keyCode;
+                   initializeOsc2(MiddleC * range * Math.pow(freqRatio, 11));
+               } else if (Osc3flag == 0) {
+                   Osc3flag = 1;
+                   Osc3key = e.keyCode;
+                   initializeOsc3(MiddleC * range * Math.pow(freqRatio, 11));
+               }
+           } else if (e.keyCode == '75') {
+               if (Osc1flag == 0) {
+                   Osc1flag = 1;
+                   Osc1key = e.keyCode;
+                   initializeOsc1(MiddleC * range * Math.pow(freqRatio, 12));
+               } else if (Osc2flag == 0) {
+                   Osc2flag = 1;
+                   Osc2key = e.keyCode;
+                   initializeOsc2(MiddleC * range * Math.pow(freqRatio, 12));
+               } else if (Osc3flag == 0) {
+                   Osc3flag = 1;
+                   Osc3key = e.keyCode;
+                   initializeOsc3(MiddleC * range * Math.pow(freqRatio, 12));
+               }
+           } else if (e.keyCode == '79') {
+               if (Osc1flag == 0) {
+                   Osc1flag = 1;
+                   Osc1key = e.keyCode;
+                   initializeOsc1(MiddleC * range * Math.pow(freqRatio, 13));
+               } else if (Osc2flag == 0) {
+                   Osc2flag = 1;
+                   Osc2key = e.keyCode;
+                   initializeOsc2(MiddleC * range * Math.pow(freqRatio, 13));
+               } else if (Osc3flag == 0) {
+                   Osc3flag = 1;
+                   Osc3key = e.keyCode;
+                   initializeOsc3(MiddleC * range * Math.pow(freqRatio, 13));
+               }
+           } else if (e.keyCode == '76') {
+               if (Osc1flag == 0) {
+                   Osc1flag = 1;
+                   Osc1key = e.keyCode;
+                   initializeOsc1(MiddleC * range * Math.pow(freqRatio, 14));
+               } else if (Osc2flag == 0) {
+                   Osc2flag = 1;
+                   Osc2key = e.keyCode;
+                   initializeOsc2(MiddleC * range * Math.pow(freqRatio, 14));
+               } else if (Osc3flag == 0) {
+                   Osc3flag = 1;
+                   Osc3key = e.keyCode;
+                   initializeOsc3(MiddleC * range * Math.pow(freqRatio, 14));
                }
            }
 
            // Check for Z (Octave Down) & X (Octave Up) pressed
-           if (e.keyCode == 90){
+           if (e.keyCode == 90) {
+               if (octave == -6) {
+                   console.log("Cannot go below 6 octaves.");
+                   return;
+               }
                octave--;
                setOctave();
            }
-           if (e.keyCode == 88){
+           if (e.keyCode == 88) {
+               if (octave == 6) {
+                   console.log("Cannot go above 6 octaves.");
+                   return;
+               }
                octave++;
                setOctave();
            }
@@ -109,57 +343,305 @@
        // Stop OSC on key release
        function checkRelease(e) {
            e = e || window.event;
-           if(soundCheck == 1) {
-               if (e.keyCode == '65') {
-                   soundCheck = 0;
-                   sine.stop();
-               } else if (e.keyCode == '87'){
-                   soundCheck = 0;
-                   sine.stop();
-               } else if (e.keyCode == '83'){
-                   soundCheck = 0;
-                   sine.stop();
-               } else if (e.keyCode == '69'){
-                   soundCheck = 0;
-                   sine.stop();
-               } else if (e.keyCode == '68'){
-                   soundCheck = 0;
-                   sine.stop();
-               } else if (e.keyCode == '70'){
-                   soundCheck = 0;
-                   sine.stop();
-               } else if (e.keyCode == '84'){
-                   soundCheck = 0;
-                   sine.stop();
-               } else if (e.keyCode == '71'){
-                   soundCheck = 0;
-                   sine.stop();
-               } else if (e.keyCode == '89'){
-                   soundCheck = 0;
-                   sine.stop();
-               } else if (e.keyCode == '72'){
-                   soundCheck = 0;
-                   sine.stop();
-               } else if (e.keyCode == '85'){
-                   soundCheck = 0;
-                   sine.stop();
-               } else if (e.keyCode == '74'){
-                   soundCheck = 0;
-                   sine.stop();
-               } else if (e.keyCode == '75'){
-                   soundCheck = 0;
-                   sine.stop();
-               } else if (e.keyCode == '79'){
-                   soundCheck = 0;
-                   sine.stop();
-               } else if (e.keyCode == '76'){
-                   soundCheck = 0;
-                   sine.stop();
+           if (e.keyCode == '65') {
+               if(Osc1key == e.keyCode){
+                   Osc1Gain.gain.value = 0;
+                   Osc1flag = 0;
+                   Osc1key = '';
+                   Osc1.stop();
+               } else if(Osc2key == e.keyCode){
+                   Osc2Gain.gain.value = 0;
+                   Osc2flag = 0;
+                   Osc2key = '';
+                   Osc2.stop();
+               } else if(Osc3key == e.keyCode){
+                   Osc3Gain.gain.value = 0;
+                   Osc3flag = 0;
+                   Osc3key = '';
+                   Osc3.stop();
+               }
+           } else if (e.keyCode == '87') {
+               if(Osc1key == e.keyCode){
+                   Osc1Gain.gain.value = 0;
+                   Osc1flag = 0;
+                   Osc1key = '';
+                   Osc1.stop();
+               } else if(Osc2key == e.keyCode){
+                   Osc2Gain.gain.value = 0;
+                   Osc2flag = 0;
+                   Osc2key = '';
+                   Osc2.stop();
+               } else if(Osc3key == e.keyCode){
+                   Osc3Gain.gain.value = 0;
+                   Osc3flag = 0;
+                   Osc3key = '';
+                   Osc3.stop();
+               }
+           } else if (e.keyCode == '83') {
+               if(Osc1key == e.keyCode){
+                   Osc1Gain.gain.value = 0;
+                   Osc1flag = 0;
+                   Osc1key = '';
+                   Osc1.stop();
+               } else if(Osc2key == e.keyCode){
+                   Osc2Gain.gain.value = 0;
+                   Osc2flag = 0;
+                   Osc2key = '';
+                   Osc2.stop();
+               } else if(Osc3key == e.keyCode){
+                   Osc3Gain.gain.value = 0;
+                   Osc3flag = 0;
+                   Osc3key = '';
+                   Osc3.stop();
+               }
+           } else if (e.keyCode == '69') {
+               if(Osc1key == e.keyCode){
+                   Osc1Gain.gain.value = 0;
+                   Osc1flag = 0;
+                   Osc1key = '';
+                   Osc1.stop();
+               } else if(Osc2key == e.keyCode){
+                   Osc2Gain.gain.value = 0;
+                   Osc2flag = 0;
+                   Osc2key = '';
+                   Osc2.stop();
+               } else if(Osc3key == e.keyCode){
+                   Osc3Gain.gain.value = 0;
+                   Osc3flag = 0;
+                   Osc3key = '';
+                   Osc3.stop();
+               }
+           } else if (e.keyCode == '68') {
+               if(Osc1key == e.keyCode){
+                   Osc1Gain.gain.value = 0;
+                   Osc1flag = 0;
+                   Osc1key = '';
+                   Osc1.stop();
+               } else if(Osc2key == e.keyCode){
+                   Osc2Gain.gain.value = 0;
+                   Osc2flag = 0;
+                   Osc2key = '';
+                   Osc2.stop();
+               } else if(Osc3key == e.keyCode){
+                   Osc3Gain.gain.value = 0;
+                   Osc3flag = 0;
+                   Osc3key = '';
+                   Osc3.stop();
+               }
+           } else if (e.keyCode == '70') {
+               if(Osc1key == e.keyCode){
+                   Osc1Gain.gain.value = 0;
+                   Osc1flag = 0;
+                   Osc1key = '';
+                   Osc1.stop();
+               } else if(Osc2key == e.keyCode){
+                   Osc2Gain.gain.value = 0;
+                   Osc2flag = 0;
+                   Osc2key = '';
+                   Osc2.stop();
+               } else if(Osc3key == e.keyCode){
+                   Osc3Gain.gain.value = 0;
+                   Osc3flag = 0;
+                   Osc3key = '';
+                   Osc3.stop();
+               }
+           } else if (e.keyCode == '84') {
+               if(Osc1key == e.keyCode){
+                   Osc1Gain.gain.value = 0;
+                   Osc1flag = 0;
+                   Osc1key = '';
+                   Osc1.stop();
+               } else if(Osc2key == e.keyCode){
+                   Osc2Gain.gain.value = 0;
+                   Osc2flag = 0;
+                   Osc2key = '';
+                   Osc2.stop();
+               } else if(Osc3key == e.keyCode){
+                   Osc3Gain.gain.value = 0;
+                   Osc3flag = 0;
+                   Osc3key = '';
+                   Osc3.stop();
+               }
+           } else if (e.keyCode == '71') {
+               if(Osc1key == e.keyCode){
+                   Osc1Gain.gain.value = 0;
+                   Osc1flag = 0;
+                   Osc1key = '';
+                   Osc1.stop();
+               } else if(Osc2key == e.keyCode){
+                   Osc2Gain.gain.value = 0;
+                   Osc2flag = 0;
+                   Osc2key = '';
+                   Osc2.stop();
+               } else if(Osc3key == e.keyCode){
+                   Osc3Gain.gain.value = 0;
+                   Osc3flag = 0;
+                   Osc3key = '';
+                   Osc3.stop();
+               }
+           } else if (e.keyCode == '89') {
+               if(Osc1key == e.keyCode){
+                   Osc1Gain.gain.value = 0;
+                   Osc1flag = 0;
+                   Osc1key = '';
+                   Osc1.stop();
+               } else if(Osc2key == e.keyCode){
+                   Osc2Gain.gain.value = 0;
+                   Osc2flag = 0;
+                   Osc2key = '';
+                   Osc2.stop();
+               } else if(Osc3key == e.keyCode){
+                   Osc3Gain.gain.value = 0;
+                   Osc3flag = 0;
+                   Osc3key = '';
+                   Osc3.stop();
+               }
+           } else if (e.keyCode == '72') {
+               if(Osc1key == e.keyCode){
+                   Osc1Gain.gain.value = 0;
+                   Osc1flag = 0;
+                   Osc1key = '';
+                   Osc1.stop();
+               } else if(Osc2key == e.keyCode){
+                   Osc2Gain.gain.value = 0;
+                   Osc2flag = 0;
+                   Osc2key = '';
+                   Osc2.stop();
+               } else if(Osc3key == e.keyCode){
+                   Osc3Gain.gain.value = 0;
+                   Osc3flag = 0;
+                   Osc3key = '';
+                   Osc3.stop();
+               }
+           } else if (e.keyCode == '85') {
+               if(Osc1key == e.keyCode){
+                   Osc1Gain.gain.value = 0;
+                   Osc1flag = 0;
+                   Osc1key = '';
+                   Osc1.stop();
+               } else if(Osc2key == e.keyCode){
+                   Osc2Gain.gain.value = 0;
+                   Osc2flag = 0;
+                   Osc2key = '';
+                   Osc2.stop();
+               } else if(Osc3key == e.keyCode){
+                   Osc3Gain.gain.value = 0;
+                   Osc3flag = 0;
+                   Osc3key = '';
+                   Osc3.stop();
+               }
+           } else if (e.keyCode == '74') {
+               if(Osc1key == e.keyCode){
+                   Osc1Gain.gain.value = 0;
+                   Osc1flag = 0;
+                   Osc1key = '';
+                   Osc1.stop();
+               } else if(Osc2key == e.keyCode){
+                   Osc2Gain.gain.value = 0;
+                   Osc2flag = 0;
+                   Osc2key = '';
+                   Osc2.stop();
+               } else if(Osc3key == e.keyCode){
+                   Osc3Gain.gain.value = 0;
+                   Osc3flag = 0;
+                   Osc3key = '';
+                   Osc3.stop();
+               }
+           } else if (e.keyCode == '75') {
+               if(Osc1key == e.keyCode){
+                   Osc1Gain.gain.value = 0;
+                   Osc1flag = 0;
+                   Osc1key = '';
+                   Osc1.stop();
+               } else if(Osc2key == e.keyCode){
+                   Osc2Gain.gain.value = 0;
+                   Osc2flag = 0;
+                   Osc2key = '';
+                   Osc2.stop();
+               } else if(Osc3key == e.keyCode){
+                   Osc3Gain.gain.value = 0;
+                   Osc3flag = 0;
+                   Osc3key = '';
+                   Osc3.stop();
+               }
+           } else if (e.keyCode == '79') {
+               if(Osc1key == e.keyCode){
+                   Osc1Gain.gain.value = 0;
+                   Osc1flag = 0;
+                   Osc1key = '';
+                   Osc1.stop();
+               } else if(Osc2key == e.keyCode){
+                   Osc2Gain.gain.value = 0;
+                   Osc2flag = 0;
+                   Osc2key = '';
+                   Osc2.stop();
+               } else if(Osc3key == e.keyCode){
+                   Osc3Gain.gain.value = 0;
+                   Osc3flag = 0;
+                   Osc3key = '';
+                   Osc3.stop();
+               }
+           } else if (e.keyCode == '76') {
+               if(Osc1key == e.keyCode){
+                   Osc1Gain.gain.value = 0;
+                   Osc1flag = 0;
+                   Osc1key = '';
+                   Osc1.stop();
+               } else if(Osc2key == e.keyCode){
+                   Osc2Gain.gain.value = 0;
+                   Osc2flag = 0;
+                   Osc2key = '';
+                   Osc2.stop();
+               } else if(Osc3key == e.keyCode){
+                   Osc3Gain.gain.value = 0;
+                   Osc3flag = 0;
+                   Osc3key = '';
+                   Osc3.stop();
                }
            }
        }
 
+
+       // Draw Oscilloscope code
+       /*var c = document.getElementById("myCanvas");
+       var canvasCtx = c.getContext("2d");
+       canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
+
+       function draw() {
+           drawVisual = requestAnimationFrame(draw);
+           analyser.getByteTimeDomainData(dataArray);
+
+           canvasCtx.fillStyle = 'rgb(200, 200, 200)';
+           canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+
+           canvasCtx.lineWidth = 2;
+           canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+           canvasCtx.beginPath();
+
+           var slideWidth = WIDTH * 1.0 / bufferLength;
+           var x = 0;
+
+           for(var i = 0; i < bufferLength; i++){
+               var v = dataArray[i] / 128.0;
+               var y = v * HEIGHT/2;
+
+               if(i === 0){
+                   canvasCtx.moveTo(x, y);
+               } else {
+                   canvasCtx.lineTo(x, y);
+               }
+
+               x += sliceWidth;
+           }
+
+           canvasCtx.lineTo(canvas.width, canvas.height/2);
+           canvasCtx.stroke();
+
+       }
+
+       draw();*/
     </script>
+
 </html>
 
 
