@@ -7,8 +7,6 @@
     var get_url = "{{=URL('api', 'get_presets')}}";
     var subscribe_url = "{{=URL('api', 'subscribe_preset', user_signature=True)}}";
     var unsubscribe_url = "{{=URL('api', 'unsubscribe_preset', user_signature=True)}}";
-    var start_idx = "{{=start_idx}}";
-    var end_idx = "{{=end_idx}}";
 </script>
 
 </head>
@@ -20,31 +18,32 @@
     </header>
 
     <nav class="nav nav-listings draggable-box">
-        <p>Filters</p>
-        <fieldset>
-            <input type="checkbox" name="mine" id="mine" value="mine" checked/><label for="mine">Show my presets</label><br />
-            <input type="checkbox" name="subscribed" id="subscribed" value="subscribed"  checked/><label for="subscribed">Show subscribed presets</label><br />
-            <input type="checkbox" name="unsubscribed" id="unsubscribed" value="unsubscribed" checked/><label for="unsubscribed">Show unsubscribed presets</label><br />
+        <p v-if="logged_in">Filters</p>
+        <fieldset v-if="logged_in">
+            <span>&bull;&emsp;</span><input type="checkbox" name="mine" id="mine" value="mine" checked/><label for="mine">Show my presets</label><br />
         </fieldset>
         <p>Sort By</p>
         <fieldset>
-            <input type="radio" name="sortby" id="popular" value="popular" /><label for="popular">Popularity</label><br />
-            <input type="radio" name="sortby" id="time" value="time" checked/><label for="time">Date added</label><br />
+            <span>&bull;&emsp;</span><input type="radio" name="sortby" id="popular" value="popular" /><label for="popular">Popularity</label><br />
+            <span>&bull;&emsp;</span><input type="radio" name="sortby" id="time" value="time" checked/><label for="time">Date added</label><br />
         </fieldset>
+        <br>
+        <i class="fa fa-refresh" aria-hidden="true"></i><span>&nbsp;&nbsp;</span>
+        <a v-on:click="apply_filters" class="ui-button ui-widget ui-corner-all">Apply filters</a>
     </nav>
-
     <article class="article">
-
         <table class="listings-table">
             <tr>
                 <th class="listings-header">Preset name</th>
                 <th class="listings-header">Creator</th>
+                <th class="listings-header">Date added</th>
                 <th class="listings-header">Subscriptions</th>
-                <th class="listings-header">Context Action</th>
+                <th class="listings-header">Context action</th>
             </tr>
             <tr v-for="(preset,index) in presets">
                 <td class="listings-data">${preset.preset_name}</td>
                 <td class="listings-data">${preset.user_name}</td>
+                <td class="listings-data">${preset.created_on}</td>
                 <td class="listings-data">${preset.subscribes}</td>
                 <td class="listings-data">
                     <p v-if="!logged_in">
@@ -63,8 +62,7 @@
             </tr>
         </table>
         <br>
-        <a v-if="has_less()" href="{{=URL('default','listings', args=[int(start_idx)-10,int(end_idx)-10])}}" class="ui-button ui-widget ui-corner-all">Previous page</a>
-        <a v-if="has_more" href="{{=URL('default','listings', args=[int(start_idx)+10,int(end_idx)+10])}}" class="ui-button ui-widget ui-corner-all">Next page</a>
+        <a v-if="has_more" v-on:click="get_more" class="ui-button ui-widget ui-corner-all">Load more</a>
 
     </article>
 

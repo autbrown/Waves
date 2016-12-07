@@ -27,38 +27,48 @@ def get_presets():
     else:
         get_shared = False
 
-
     presets = []
     subscribed_presets = []
+
     logged_in = auth.user_id is not None
-    has_more = False
     current_user = auth.user.email if logged_in else None
     subscribed_to = auth.user.subscribed_to if logged_in else []
-    count = 0
+    has_more = False
+
     if get_shared:
-        rows = db().select(db.preset.ALL, limitby=(start_idx, end_idx + 1), orderby=~db.preset.created_on)
+        get_mine = request.vars.get_mine == 'true'
+        get_subscribed = request.vars.get_subscribed == 'true'
+        count = 0
+        query = db.preset.made_public == True
+
+        if auth.user is not None and not get_mine:
+            query &= ~(db.preset.user_email == auth.user.email)
+
+        if request.vars.sortby == "time":
+            rows = db(query).select(db.preset.ALL, limitby=(start_idx, end_idx + 1), orderby=~db.preset.created_on)
+        else:
+            rows = db(query).select(db.preset.ALL, limitby=(start_idx, end_idx + 1), orderby=~db.preset.subscribes)
         for r in rows:
-            if r.made_public:
-                if count < end_idx-start_idx:
-                    count += 1
-                    if auth.user is not None and auth.user.email == r.user_email:
-                        mine = True
-                    else:
-                        mine = False
-                    p = dict(
-                        preset_name=r.preset_name,
-                        subscribes=r.subscribes,
-                        volume=r.volume,
-                        LPF=r.LPF,
-                        wave_type=r.wave_type,
-                        user_name=get_user_name_from_email(r.user_email),
-                        created_on=r.shared_on,
-                        mine=mine,
-                        id=r.id,
-                    )
-                    presets.append(p)
+            if count < end_idx-start_idx:
+                if auth.user is not None and auth.user.email == r.user_email:
+                    mine = True
                 else:
-                    has_more = True
+                    mine = False
+                p = dict(
+                    preset_name=r.preset_name,
+                    subscribes=r.subscribes,
+                    volume=r.volume,
+                    LPF=r.LPF,
+                    wave_type=r.wave_type,
+                    user_name=get_user_name_from_email(r.user_email),
+                    created_on=r.shared_on,
+                    mine=mine,
+                    id=r.id,
+                )
+                presets.append(p)
+                count += 1
+            else:
+                has_more = True
     else:
         rows = db().select(db.preset.ALL, orderby=~db.preset.created_on)
         for r in rows:

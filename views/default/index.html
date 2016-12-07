@@ -122,12 +122,6 @@ $( function() {
 </script>
 
 <script>
-$( function() {
-  $( "#dialog" ).dialog();
-} );
-</script>
-
-<script>
     $(function($) {
         $(".knob").knob({
             change : function (value) {
@@ -194,7 +188,7 @@ $( function() {
     <div>
         <div class="main-content">
             <div id="title" class="draggable-box titlebox text-center">
-              <h2 class="alignleft">Synth</h2>
+              <h2 class="alignleft">Synthesizer</h2>
                 <img src="{{=URL('static', 'images/waves.png')}}" alt="waves" height="63" width="202">
               <h2 class="alignright">Presets</h2>
             </div>
@@ -223,7 +217,7 @@ $( function() {
                                 <a class="ui-button ui-widget ui-corner-all" style="width: 100px; overflow-x:hidden" href="#" v-on:click="set_preset(index)">${preset.preset_name}</a>
                             </div>
                             <div class="alignright">
-                                <i v-if="!is_shared(index)" class="fa fa-share-square-o" v-on:click="share_preset(index)" aria-hidden="true"></i>
+                                <i v-if="!is_shared(index)" class="fa fa-share-square-o" v-on:click="share_preset(index)" title="Share preset" aria-hidden="true"></i>
                                 <i v-else class="fa fa-share-square-o grayed-out" aria-hidden="true"></i>
                                 <i class="fa fa-trash-o" v-on:click="delete_preset(index)" title="Delete preset" aria-hidden="true"></i>
                             </div>

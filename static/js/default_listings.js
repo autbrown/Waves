@@ -20,19 +20,29 @@ var app = function() {
     function get_presets_url(start_idx, end_idx) {
         var pp = {
             start_idx: start_idx,
-            end_idx: end_idx
+            end_idx: end_idx,
+            sortby: self.vue.sortby,
+            get_mine: self.vue.get_mine,
         };
         return get_url + "?" + $.param(pp);
     };
 
-    self.get_presets = function(start_idx, end_idx) {
-        $.getJSON(get_presets_url(start_idx, end_idx), function(data) {
+    self.get_presets = function() {
+        $.getJSON(get_presets_url(0,10), function(data) {
             self.vue.presets = data.presets;
             self.vue.logged_in = data.logged_in;
             self.vue.current_user = data.current_user;
             self.vue.current_username = data.current_username;
             self.vue.has_more = data.has_more;
             self.vue.subscribed = data.subscribed;
+        });
+    };
+
+    self.get_more = function() {
+        var num = self.vue.presets.length;
+        $.getJSON(get_presets_url(num,num + 10), function(data) {
+            self.vue.has_more = data.has_more;
+            self.extend(self.vue.presets, data.presets);
         });
     };
 
@@ -82,8 +92,11 @@ var app = function() {
         return !self.vue.is_mine(index) && !self.vue.is_subscribed(index);
     };
 
-    self.has_less = function() {
-        return start_idx > 0;
+    self.apply_filters = function() {
+        self.vue.presets = [];
+        self.vue.sortby = $("input[name='sortby']:checked").val();
+        self.vue.get_mine = $('#mine').is(':checked');
+        self.get_presets();
     };
 
     // Complete as needed.
@@ -98,18 +111,21 @@ var app = function() {
             subscribed: [],
             logged_in: false,
             has_more: false,
+            sortby: "time",
+            get_mine: true,
         },
         methods: {
+            get_more: self.get_more,
             subscribe_button: self.subscribe_button,
             unsubscribe_button: self.unsubscribe_button,
             is_enabled: self.is_enabled,
             is_mine: self.is_mine,
             is_subscribed: self.is_subscribed,
-            has_less: self.has_less,
+            apply_filters: self.apply_filters,
         }
     });
 
-    self.get_presets(start_idx,end_idx);
+    self.get_presets();
     $("#vue-div").show();
 
 
